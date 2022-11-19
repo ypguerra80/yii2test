@@ -19,7 +19,13 @@ class m221118_023505_create_user_table extends Migration
             'authKey'       => $this->string(255),
             'accessToken'   => $this->string(255),
         ]);
+
         $this->alterColumn('{{%user}}', 'id', $this->integer().' NOT NULL AUTO_INCREMENT');
+
+        $this->insert('{{%user}}', [
+            'username'  => 'admin',
+            'password'  => '$2y$13$RRfjqDu/kiqFn93ChlFKyuekl2Rc56//v5Rs3z92OuT9AX2P.4xxO',
+        ]);
     }
 
     /**

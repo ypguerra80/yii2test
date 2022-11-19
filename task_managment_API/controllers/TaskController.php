@@ -51,7 +51,7 @@ class TaskController extends Controller
     public function actionIndex()
     {
         $dataProvider = new ActiveDataProvider([
-            'query' => Task::find(),
+            'query' => Task::find()->with('user','status'),
             /*
             'pagination' => [
                 'pageSize' => 50
