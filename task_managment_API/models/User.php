@@ -90,7 +90,7 @@ class User extends \yii\db\ActiveRecord implements \yii\web\IdentityInterface
     public static function findIdentity($id)
     {
         $user = User::findOne(['id' => $id]);
-        return new static($user);
+        return $user != null ? new static($user) : false;
     }
 
     /**
@@ -99,7 +99,7 @@ class User extends \yii\db\ActiveRecord implements \yii\web\IdentityInterface
     public static function findIdentityByAccessToken($token, $type = null)
     {
         $user = User::findOne(['accessToken' => $token]);
-        return new static($user);
+        return $user != null ? new static($user) : false;
     }
 
     /**
@@ -134,9 +134,7 @@ class User extends \yii\db\ActiveRecord implements \yii\web\IdentityInterface
      */
     public static function findByUsername($username)
     {
-
         return User::findOne(['username' => $username]);
-
     }
 
 }

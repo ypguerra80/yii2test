@@ -42,6 +42,7 @@ $config = [
             ],
         ],
         'db' => $db,
+        //TODO: solve problems using friendly Urls
         /*
         'urlManager' => [
             'enablePrettyUrl' => true,

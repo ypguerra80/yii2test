@@ -14,6 +14,9 @@ use yii\filters\AccessControl;
  */
 class UserController extends Controller
 {
+
+    //TODO: create the roles admin and user
+
     /**
      * @inheritDoc
      */
