@@ -7,6 +7,7 @@ use yii\data\ActiveDataProvider;
 use yii\web\Controller;
 use yii\web\NotFoundHttpException;
 use yii\filters\VerbFilter;
+use yii\filters\AccessControl;
 
 /**
  * UserController implements the CRUD actions for User model.
@@ -25,6 +26,21 @@ class UserController extends Controller
                     'class' => VerbFilter::className(),
                     'actions' => [
                         'delete' => ['POST'],
+                    ],
+                ],
+                'access' => [
+                    'class' => AccessControl::class,
+                    'rules' => [
+                        [
+                            'allow' => true,
+                            'actions' => ['login'],
+                            'roles' => ['?'],
+                        ],
+                        [
+                            'allow' => true,
+                            'actions' => ['logout', 'index', 'view', 'create', 'update', 'delete'],
+                            'roles' => ['@'],
+                        ],
                     ],
                 ],
             ]
@@ -77,12 +93,19 @@ class UserController extends Controller
      */
     public function actionCreate()
     {
-        $model = new User();
+        //TODO: It should display only username and password. I don't understand scenarios.
+        $model = new User(['scenario' => User::SCENARIO_CREATE]);
 
         if ($this->request->isPost) {
-            if ($model->load($this->request->post()) && $model->save()) {
-                return $this->redirect(['view', 'id' => $model->id]);
-            }
+            if($model->load($this->request->post())){
+                $model->password = \Yii::$app->security->generatePasswordHash($model->password);
+                $model->authKey = \Yii::$app->getSecurity()->generateRandomString();
+                $model->accessToken = \Yii::$app->getSecurity()->generateRandomString();
+
+                if ($model->save()) {
+                    return $this->redirect(['view', 'id' => $model->id]);
+                }
+            }            
         } else {
             $model->loadDefaultValues();
         }
@@ -103,8 +126,33 @@ class UserController extends Controller
     {
         $model = $this->findModel($id);
 
-        if ($this->request->isPost && $model->load($this->request->post()) && $model->save()) {
-            return $this->redirect(['view', 'id' => $model->id]);
+        $model->scenario = User::SCENARIO_CREATE;
+
+        $currentPassword = $model->password;
+        //TODO: It should be solved by scenarios
+        $currentKey = $model->authKey;
+        $currentToken = $model->accessToken;
+
+        $model->password = '';
+        $model->authKey = '';
+        $model->accessToken = '';
+
+        if ($this->request->isPost) {
+            if($model->load($this->request->post())){
+
+                if(!empty($model->password)){
+                    $model->password = \Yii::$app->security->generatePasswordHash($model->password);
+                }else{
+                    $model->password = $currentPassword;
+                }   
+                
+                $model->authKey = $currentKey;
+                $model->accessToken = $currentToken;
+
+                if($model->save()){
+                    return $this->redirect(['view', 'id' => $model->id]);
+                }
+            }            
         }
 
         return $this->render('update', [
