@@ -21,7 +21,7 @@ class TaskController extends ActiveController
      */
     public function actions()
     {
-        return ['get-my-tasks'];
+        return ['get-my-tasks', 'save-task'];
     }
 
     /**
@@ -38,18 +38,23 @@ class TaskController extends ActiveController
     //     ];
     //     return $behaviors;
     // }
-    // public function behaviors() {
-    //     return ArrayHelper::merge(parent::behaviors(), [    
-    //         'verbs' => [    
-    //             'class' => VerbFilter::className(),    
-    //             'actions' => [    
-    //                 'authenticate'  => ['post'],
-    //                 'register'      => ['post'],     
-    //             ],    
-    //         ],    
-    //     ]);
+    public function behaviors() {
+        return ArrayHelper::merge(parent::behaviors(), [    
+            'verbs' => [    
+                'class' => VerbFilter::className(),    
+                'actions' => [    
+                    'save-task'  => ['post'],  
+                ],    
+            ], 
+            'authenticator' => [
+                'class' => CompositeAuth::class,
+                'authMethods' => [
+                    HttpBearerAuth::class,
+                ],
+            ]
+        ]);
     
-    // }
+    }
 
     //TODO: PUT action doesn't save the entity
     //TODO: DELETE action returns an http code 204
@@ -62,6 +67,37 @@ class TaskController extends ActiveController
         return [
             'success' => true,
             'data'  => $tasks,
+        ];
+    }
+
+    public function actionSaveTask(){
+        \Yii::$app->response->format = \yii\web\Response::FORMAT_JSON;
+
+        $id             = \Yii::$app->request->post('id');
+        $status_id      = \Yii::$app->request->post('status_id');
+        $user_id        = \Yii::$app->request->post('user_id');
+        $title          = \Yii::$app->request->post('title');
+        $description    = \Yii::$app->request->post('description');
+
+        $task = new Task();
+
+        if($id > 0){
+            $task = \app\models\Task::findOne(['id' => $id]);
+        }
+
+        $task->user_id = $user_id;
+        $task->status_id = $status_id;
+        $task->title = $title;
+        $task->description = $description;
+
+        if($task->save()){
+            return [
+                'success' => true,
+            ];
+        }
+
+        return [
+            'success' => false,
         ];
     }
 

@@ -2,6 +2,7 @@ import 'dart:developer';
 import 'dart:ffi';
 
 import 'package:dio/dio.dart';
+import 'package:tasksapp/classes/task_dto.dart';
 import 'package:tasksapp/classes/user_dto.dart';
 import 'package:tasksapp/services/storage_service.dart';
 
@@ -48,7 +49,11 @@ class ApiService{
 
       UserDTO user = await StorageService.instance.getUser();
 
-      var response = await Dio().get('${API_URL}api/task/get-my-tasks&userId=${user.id}');
+      var response = await Dio().get('${API_URL}api/task/get-my-tasks&userId=${user.id}', options: Options(headers: {
+        "Content-Type": "application/json",
+        "Authorization":
+        "Bearer ${user.token}",
+      }));
 
       log('log: $response');
 
@@ -61,6 +66,38 @@ class ApiService{
     }
 
     return List.empty();
+  }
+
+  Future<bool> saveTask(TaskDTO task) async {
+    try {
+
+      UserDTO user = await StorageService.instance.getUser();
+
+      var formData = FormData.fromMap({
+        'id': task.id,
+        'user_id': user.id,
+        'status_id': task.statusId,
+        'title': task.title,
+        'description': task.description,
+      });
+
+      var response = await Dio().post('${API_URL}api/task/save-task', data: formData, options: Options(headers: {
+        "Content-Type": "application/json",
+        "Authorization":
+        "Bearer ${user.token}",
+      }));
+
+      log('log: $response');
+
+      if (response.statusCode == 200 && response.data['success']) {
+        log('log: $response');
+        return response.data['success'];
+      }
+    } catch (e) {
+      log('log: $e');
+    }
+
+    return false;
   }
 
   Future<UserDTO> _manageUser(String username, String password, String action) async {

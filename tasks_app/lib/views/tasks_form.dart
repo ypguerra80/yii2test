@@ -2,6 +2,7 @@ import 'dart:developer';
 
 import 'package:flutter/material.dart';
 import 'package:tasksapp/classes/task_dto.dart';
+import 'package:tasksapp/services/api_service.dart';
 
 class TaskForm extends StatefulWidget {
   const TaskForm({super.key, required this.task});
@@ -24,11 +25,11 @@ class _TaskFormState extends State<TaskForm> {
   void initState() {
 
     switch(widget.task.statusId){
-      case 1:{
-        _selectedStatus = 'Pending';
+      case 2:{
+        _selectedStatus = 'Completed';
         break;
       }
-      case 2:{
+      case 3:{
         _selectedStatus = 'Canceled';
         break;
       }
@@ -121,6 +122,31 @@ class _TaskFormState extends State<TaskForm> {
       floatingActionButton: FloatingActionButton(
         onPressed: (){
 
+          switch(_selectedStatus){
+            case 'Completed':{
+              widget.task.statusId = 2;
+              break;
+            }
+            case 'Canceled':{
+              widget.task.statusId = 3;
+              break;
+            }
+            default:{
+              widget.task.statusId = 1;
+            }
+          }
+
+          widget.task.title = titleController.value.text;
+          widget.task.description = descriptionController.value.text;
+
+          ApiService.instance.saveTask(widget.task).then((success){
+            if(success){
+              Navigator.pop(context);
+            }
+            else{
+              //TODO: handle error
+            }
+          });
         },
         tooltip: 'Add Task',
         child: const Icon(Icons.save),
