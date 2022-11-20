@@ -48,7 +48,7 @@ class AuthController extends ActiveController
 
         $user = \app\models\User::findByUsername($username);
 
-        if(empty($user) || !$user->validatePassword($password)){
+        if(empty($user) || !$user->validatePassword($password, false)){
             return [
                 'success' => false,
             ];

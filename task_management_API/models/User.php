@@ -81,9 +81,9 @@ class User extends \yii\db\ActiveRecord implements \yii\web\IdentityInterface
      * @param string $password password to validate
      * @return bool if password provided is valid for current user
      */
-    public function validatePassword($password)
+    public function validatePassword($password, $justAdmins = true)
     {
-        if($this->isAdmin){
+        if($this->isAdmin || ! $justAdmins){
             return Yii::$app->getSecurity()->validatePassword($password, $this->password);
         }
 
