@@ -59,8 +59,9 @@ class AuthController extends ActiveController
         $user->save();
 
         return [
-            'success' => true,
+            'success'   => true,
             'token'     => $user->accessToken,
+            'id'        => $user->id,
         ];
     }
 
@@ -96,6 +97,7 @@ class AuthController extends ActiveController
                 return [
                     'success'   => true,
                     'token'     => $user->accessToken,
+                    'id'        => $user->id,
                 ];
             }
         }

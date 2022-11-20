@@ -79,5 +79,16 @@ class Task extends \yii\db\ActiveRecord
     {
         return $this->hasOne(User::class, ['id' => 'user_id']);
     }
+
+    /**
+     * Finds user by userToken
+     *
+     * @param string $userToken
+     * @return static|null
+     */
+    public static function findByUserId($userId)
+    {
+        return Task::find()->where(['user_id' => $userId])->all();
+    }
     
 }

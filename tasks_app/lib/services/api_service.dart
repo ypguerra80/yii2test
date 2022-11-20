@@ -3,6 +3,7 @@ import 'dart:ffi';
 
 import 'package:dio/dio.dart';
 import 'package:tasksapp/classes/user.dart';
+import 'package:tasksapp/services/storage_service.dart';
 
 class ApiService{
 
@@ -42,8 +43,29 @@ class ApiService{
     return false;
   }
 
+  Future<List<dynamic>> getTasks() async {
+    try {
+
+      User user = await StorageService.instance.getUser();
+
+      var response = await Dio().get('${API_URL}api/task/get-my-tasks&userId=${user.id}');
+
+      log('log: $response');
+
+      if (response.statusCode == 200 && response.data['success']) {
+        log('log: $response');
+        return response.data['data'];
+      }
+    } catch (e) {
+      log('log: $e');
+    }
+
+    return List.empty();
+  }
+
   Future<User> _manageUser(String username, String password, String action) async {
-    var token = '';
+    int userId = 0;
+    String token = '';
 
     try {
 
@@ -57,13 +79,14 @@ class ApiService{
       log('log: $response');
 
       if (response.statusCode == 200 && response.data['success']) {
-        token = response.data['token'];
+        userId  = response.data['id'];
+        token   = response.data['token'];
       }
     } catch (e) {
       log('log: $e');
     }
 
-    return User(username, token);
+    return User(userId, username, token);
   }
 
 }

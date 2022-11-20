@@ -17,16 +17,24 @@ class StorageService{
   StorageService._internal();
 
   Future<User> getUser() async{
+    String? userId = await storage.read(key: 'user_id_key');
+    int id = 0;
+
+    if(userId != null && userId.isNotEmpty){
+      id = int.parse(userId);
+    }
+
     String? userName = await storage.read(key: 'user_name_key');
     String name = userName ?? '';
 
     String? userToken = await storage.read(key: 'user_token_key');
     String token = userToken ?? '';
 
-    return User(name, token);
+    return User(id, name, token);
   }
 
   saveUser(User user) async{
+    await storage.write(key: 'user_id_key', value: user.id.toString());
     await storage.write(key: 'user_name_key', value: user.name);
     await storage.write(key: 'user_token_key', value: user.token);
   }

@@ -1,8 +1,9 @@
 class User{
 
-  var name = '';
-  var token = '';
+  int id    = 0;
+  String name  = '';
+  String token = '';
 
-  User(this.name, this.token);
+  User(this.id, this.name, this.token);
 
 }
