@@ -16,4 +16,15 @@ class TaskDTO{
     description = obj['description'];
   }
 
+  getStatus(){
+    switch(statusId){
+      case 2:
+        return 'Completed';
+      case 3:
+        return 'Canceled';
+      default:
+        return 'Pending';
+    }
+  }
+
 }

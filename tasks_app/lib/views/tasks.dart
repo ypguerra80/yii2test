@@ -6,7 +6,8 @@ import 'package:tasksapp/classes/user_dto.dart';
 import 'package:tasksapp/services/api_service.dart';
 import 'package:tasksapp/services/storage_service.dart';
 import 'package:tasksapp/views/login.dart';
-import 'package:tasksapp/views/tasks_form.dart';
+import 'package:tasksapp/views/task_details.dart';
+import 'package:tasksapp/views/task_form.dart';
 
 class Tasks extends StatefulWidget {
   const Tasks({super.key});
@@ -88,7 +89,7 @@ class _TasksState extends State<Tasks> {
           Expanded(child: Text(task['title'])),
           IconButton(
             onPressed: (){
-              log('log: TAP VIEW');
+              Navigator.push(context, MaterialPageRoute(builder: (context) => TaskDetails(task: TaskDTO.fromMap(task))));
             },
             icon: const Icon(Icons.remove_red_eye),
           ),
