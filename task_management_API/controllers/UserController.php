@@ -104,6 +104,7 @@ class UserController extends Controller
                 $model->password = \Yii::$app->security->generatePasswordHash($model->password);
                 $model->authKey = \Yii::$app->getSecurity()->generateRandomString();
                 $model->accessToken = \Yii::$app->getSecurity()->generateRandomString();
+                $model->isAdmin = 1;
 
                 if ($model->save()) {
                     return $this->redirect(['view', 'id' => $model->id]);

@@ -1,4 +1,9 @@
+import 'dart:developer';
+
 import 'package:flutter/material.dart';
+import 'package:tasksapp/classes/user.dart';
+import 'package:tasksapp/services/storage_service.dart';
+import 'package:tasksapp/views/login.dart';
 
 class Tasks extends StatefulWidget {
   const Tasks({super.key});
@@ -9,50 +14,57 @@ class Tasks extends StatefulWidget {
 
 class _TasksState extends State<Tasks> {
 
-
-  int _counter = 0;
+  String username = '';
 
   @override
   void initState() {
-    super.initState();
-  }
 
-  void _incrementCounter() {
-    setState(() {
-      // This call to setState tells the Flutter framework that something has
-      // changed in this State, which causes it to rerun the build method below
-      // so that the display can reflect the updated values. If we changed
-      // _counter without calling setState(), then the build method would not be
-      // called again, and so nothing would appear to happen.
-      _counter++;
+    StorageService.instance.getUser().then((user){
+      setState(() {
+        username = user.name;
+      });
     });
+
+    super.initState();
   }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: const Text('Task Manager'),
+        title: Text('Task Manager ($username)'),
+        actions: <Widget>[
+          Padding(
+              padding: const EdgeInsets.only(right: 20.0),
+              child: GestureDetector(
+                onTap: () {
+                  log('log: Log out');
+
+                  StorageService.instance.saveUser(User('', ''));
+
+                  Navigator.pushReplacement(
+                    context,
+                    MaterialPageRoute(builder: (context) => const Login()),
+                  );
+                },
+                child: const Icon(
+                  Icons.exit_to_app,
+                  size: 26.0,
+                ),
+              )
+          ),
+        ],
       ),
-      body: Center(
-        child: Column(
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: <Widget>[
-            const Text(
-              'You have pushed the button this many times:',
-            ),
-            Text(
-              '$_counter',
-              style: Theme.of(context).textTheme.headline4,
-            ),
-          ],
+      body: const Center(
+        child: Text(
+          'TASK LIST',
         ),
       ),
       floatingActionButton: FloatingActionButton(
-        onPressed: _incrementCounter,
-        tooltip: 'Increment',
+        onPressed: (){},
+        tooltip: 'Add Task',
         child: const Icon(Icons.add),
-      ), // This trailing comma makes auto-formatting nicer for build methods.
+      ),
     );
   }
 

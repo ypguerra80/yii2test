@@ -12,6 +12,7 @@ use Yii;
  * @property string $password
  * @property string|null $authKey
  * @property string|null $accessToken
+ * @property boolean $isAdmin
  *
  * @property Task[] $tasks
  */
@@ -52,6 +53,7 @@ class User extends \yii\db\ActiveRecord implements \yii\web\IdentityInterface
             'password' => 'Password',
             'authKey' => 'Auth Key',
             'accessToken' => 'Access Token',
+            'isAdmin' => 'Admin',
         ];
     }
 
@@ -81,7 +83,11 @@ class User extends \yii\db\ActiveRecord implements \yii\web\IdentityInterface
      */
     public function validatePassword($password)
     {
-        return Yii::$app->getSecurity()->validatePassword($password, $this->password);
+        if($this->isAdmin){
+            return Yii::$app->getSecurity()->validatePassword($password, $this->password);
+        }
+
+        return false;
     }
 
     /**

@@ -20,7 +20,7 @@ class AuthController extends ActiveController
      */
     public function actions()
     {
-        return ['authenticate'];
+        return ['authenticate', 'available', 'register'];
     }
 
      /**
@@ -31,7 +31,8 @@ class AuthController extends ActiveController
             'verbs' => [    
                 'class' => VerbFilter::className(),    
                 'actions' => [    
-                    'authenticate' => ['post'],    
+                    'authenticate'  => ['post'],
+                    'register'      => ['post'],     
                 ],    
             ],    
         ]);
@@ -60,6 +61,47 @@ class AuthController extends ActiveController
         return [
             'success' => true,
             'token'     => $user->accessToken,
+        ];
+    }
+
+    public function actionAvailable($name){
+        \Yii::$app->response->format = \yii\web\Response::FORMAT_JSON;
+
+        //TODO: Do I need to sanitize user data?... Or Yii takes care of it
+        $user = \app\models\User::findByUsername($name);
+
+        return [
+            'available' => empty($user),
+        ];
+    }
+
+    public function actionRegister(){
+        \Yii::$app->response->format = \yii\web\Response::FORMAT_JSON;
+
+        //TODO: Do I need to sanitize user data?... Or Yii takes care of it
+        $username = \Yii::$app->request->post('username');
+        $password = \Yii::$app->request->post('password');
+
+        $user = \app\models\User::findByUsername($username);
+
+        if(empty($user)){
+            $user = new User(['scenario' => User::SCENARIO_CREATE]);
+            $user->username = $username;
+            $user->password = \Yii::$app->security->generatePasswordHash($password);
+            $user->authKey = \Yii::$app->getSecurity()->generateRandomString();
+            $user->accessToken = \Yii::$app->getSecurity()->generateRandomString();
+            $user->isAdmin = 0;
+
+            if ($user->save()) {
+                return [
+                    'success'   => true,
+                    'token'     => $user->accessToken,
+                ];
+            }
+        }
+
+        return [
+            'success' => false,
         ];
     }
 }
