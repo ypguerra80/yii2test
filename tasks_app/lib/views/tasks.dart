@@ -1,10 +1,12 @@
 import 'dart:developer';
 
 import 'package:flutter/material.dart';
-import 'package:tasksapp/classes/user.dart';
+import 'package:tasksapp/classes/task_dto.dart';
+import 'package:tasksapp/classes/user_dto.dart';
 import 'package:tasksapp/services/api_service.dart';
 import 'package:tasksapp/services/storage_service.dart';
 import 'package:tasksapp/views/login.dart';
+import 'package:tasksapp/views/tasks_form.dart';
 
 class Tasks extends StatefulWidget {
   const Tasks({super.key});
@@ -45,7 +47,7 @@ class _TasksState extends State<Tasks> {
                 onTap: () {
                   log('log: Log out');
 
-                  StorageService.instance.saveUser(User(0, '', ''));
+                  StorageService.instance.saveUser(UserDTO(0, '', ''));
 
                   Navigator.pushReplacement(
                     context,
@@ -67,7 +69,10 @@ class _TasksState extends State<Tasks> {
       ),
       floatingActionButton: FloatingActionButton(
         onPressed: (){
-
+          Navigator.push(
+            context,
+            MaterialPageRoute(builder: (context) => TaskForm(task: TaskDTO())),
+          );
         },
         tooltip: 'Add Task',
         child: const Icon(Icons.add),
@@ -89,7 +94,7 @@ class _TasksState extends State<Tasks> {
           ),
           IconButton(
             onPressed: (){
-              log('log: TAP EDIT');
+              Navigator.push(context, MaterialPageRoute(builder: (context) => TaskForm(task: TaskDTO.fromMap(task))));
             },
             icon: const Icon(Icons.edit),
           ),

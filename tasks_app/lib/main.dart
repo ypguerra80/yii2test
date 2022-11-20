@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:tasksapp/classes/user.dart';
+import 'package:tasksapp/classes/user_dto.dart';
 import 'package:tasksapp/services/api_service.dart';
 import 'package:tasksapp/services/storage_service.dart';
 import 'package:tasksapp/views/error_screen.dart';
@@ -21,7 +21,7 @@ class MyApp extends StatefulWidget {
 
 class _MyApp extends State<MyApp> with TickerProviderStateMixin {
 
-  late Future<User> user;
+  late Future<UserDTO> user;
 
   @override
   void initState() {
@@ -39,7 +39,7 @@ class _MyApp extends State<MyApp> with TickerProviderStateMixin {
       theme: ThemeData(
         primarySwatch: Colors.blue,
       ),
-      home: FutureBuilder<User>(
+      home: FutureBuilder<UserDTO>(
         future: user,
         builder: (context, snapshot) {
           if(snapshot.hasData){

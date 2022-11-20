@@ -1,7 +1,7 @@
 import 'dart:developer';
 //TODO: Check for flutter_secure_storage configurations on different platforms.
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
-import 'package:tasksapp/classes/user.dart';
+import 'package:tasksapp/classes/user_dto.dart';
 
 class StorageService{
 
@@ -16,7 +16,7 @@ class StorageService{
 
   StorageService._internal();
 
-  Future<User> getUser() async{
+  Future<UserDTO> getUser() async{
     String? userId = await storage.read(key: 'user_id_key');
     int id = 0;
 
@@ -30,10 +30,10 @@ class StorageService{
     String? userToken = await storage.read(key: 'user_token_key');
     String token = userToken ?? '';
 
-    return User(id, name, token);
+    return UserDTO(id, name, token);
   }
 
-  saveUser(User user) async{
+  saveUser(UserDTO user) async{
     await storage.write(key: 'user_id_key', value: user.id.toString());
     await storage.write(key: 'user_name_key', value: user.name);
     await storage.write(key: 'user_token_key', value: user.token);

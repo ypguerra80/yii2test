@@ -2,7 +2,7 @@ import 'dart:developer';
 import 'dart:ffi';
 
 import 'package:dio/dio.dart';
-import 'package:tasksapp/classes/user.dart';
+import 'package:tasksapp/classes/user_dto.dart';
 import 'package:tasksapp/services/storage_service.dart';
 
 class ApiService{
@@ -18,11 +18,11 @@ class ApiService{
 
   ApiService._internal();
 
-  Future<User> doLogin(String username, String password) async {
+  Future<UserDTO> doLogin(String username, String password) async {
     return _manageUser(username, password, 'authenticate');
   }
 
-  Future<User> doRegister(String username, String password) async {
+  Future<UserDTO> doRegister(String username, String password) async {
     return _manageUser(username, password, 'register');
   }
 
@@ -46,7 +46,7 @@ class ApiService{
   Future<List<dynamic>> getTasks() async {
     try {
 
-      User user = await StorageService.instance.getUser();
+      UserDTO user = await StorageService.instance.getUser();
 
       var response = await Dio().get('${API_URL}api/task/get-my-tasks&userId=${user.id}');
 
@@ -63,7 +63,7 @@ class ApiService{
     return List.empty();
   }
 
-  Future<User> _manageUser(String username, String password, String action) async {
+  Future<UserDTO> _manageUser(String username, String password, String action) async {
     int userId = 0;
     String token = '';
 
@@ -86,7 +86,7 @@ class ApiService{
       log('log: $e');
     }
 
-    return User(userId, username, token);
+    return UserDTO(userId, username, token);
   }
 
 }
