@@ -100,7 +100,13 @@ class _TasksState extends State<Tasks> {
           ),
           IconButton(
             onPressed: (){
-              log('log: TAP DELETE');
+              ApiService.instance.deleteTask(task['id']).then((success){
+                if(success){
+                  //TODO: delete from list
+                }else{
+                  //TODO: handle error
+                }
+              });
             },
             icon: const Icon(Icons.delete),
           ),

@@ -21,7 +21,7 @@ class TaskController extends ActiveController
      */
     public function actions()
     {
-        return ['get-my-tasks', 'save-task'];
+        return ['get-my-tasks', 'save-task', 'delete-task'];
     }
 
     /**
@@ -91,6 +91,22 @@ class TaskController extends ActiveController
         $task->description = $description;
 
         if($task->save()){
+            return [
+                'success' => true,
+            ];
+        }
+
+        return [
+            'success' => false,
+        ];
+    }
+
+    public function actionDeleteTask($id){
+        \Yii::$app->response->format = \yii\web\Response::FORMAT_JSON;
+
+        $task = \app\models\Task::findOne(['id' => $id]);
+
+        if($task->delete()){
             return [
                 'success' => true,
             ];

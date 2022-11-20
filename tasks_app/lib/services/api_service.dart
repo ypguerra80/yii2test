@@ -100,6 +100,30 @@ class ApiService{
     return false;
   }
 
+  Future<bool> deleteTask(int taskId) async {
+    try {
+
+      UserDTO user = await StorageService.instance.getUser();
+
+      var response = await Dio().get('${API_URL}api/task/delete-task&id=$taskId', options: Options(headers: {
+        "Content-Type": "application/json",
+        "Authorization":
+        "Bearer ${user.token}",
+      }));
+
+      log('log: $response');
+
+      if (response.statusCode == 200 && response.data['success']) {
+        log('log: $response');
+        return response.data['success'];
+      }
+    } catch (e) {
+      log('log: $e');
+    }
+
+    return false;
+  }
+
   Future<UserDTO> _manageUser(String username, String password, String action) async {
     int userId = 0;
     String token = '';
