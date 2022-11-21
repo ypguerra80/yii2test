@@ -1,6 +1,8 @@
 import 'dart:developer';
 
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
+import 'package:tasksapp/classes/task-model.dart';
 import 'package:tasksapp/classes/task_dto.dart';
 import 'package:tasksapp/classes/user_dto.dart';
 import 'package:tasksapp/services/api_service.dart';
@@ -20,18 +22,16 @@ class _TasksState extends State<Tasks> {
 
   String username = '';
 
-  List<dynamic> _tasks = List.empty();
-
   @override
   void initState() {
+
+    TaskModel.instance.load();
 
     StorageService.instance.getUser().then((user){
       setState(() {
         username = user.name;
       });
     });
-
-    _loadTasks();
 
     super.initState();
   }
@@ -63,10 +63,14 @@ class _TasksState extends State<Tasks> {
           ),
         ],
       ),
-      body: ListView(
-        children: <Widget>[
-          ..._getTaskWidgets(),
-        ],
+      body: Consumer<TaskModel>(
+        builder: (context, taskModel, child) {
+          return ListView(
+            children: [
+              ..._getTaskWidgets(taskModel),
+            ],
+          );
+        },
       ),
       floatingActionButton: FloatingActionButton(
         onPressed: (){
@@ -81,27 +85,27 @@ class _TasksState extends State<Tasks> {
     );
   }
 
-  List<Widget> _getTaskWidgets(){
-    return _tasks.map((task) => Container(
+  List<Widget> _getTaskWidgets(TaskModel taskModel){
+    return taskModel.tasks.map((task) => Container(
       padding: const EdgeInsets.only(left: 10),
       child: Row(
         children: [
-          Expanded(child: Text(task['title'])),
+          Expanded(child: Text(task.title)),
           IconButton(
             onPressed: (){
-              Navigator.push(context, MaterialPageRoute(builder: (context) => TaskDetails(task: TaskDTO.fromMap(task))));
+              Navigator.push(context, MaterialPageRoute(builder: (context) => TaskDetails(task: task)));
             },
             icon: const Icon(Icons.remove_red_eye),
           ),
           IconButton(
             onPressed: (){
-              Navigator.push(context, MaterialPageRoute(builder: (context) => TaskForm(task: TaskDTO.fromMap(task))));
+              Navigator.push(context, MaterialPageRoute(builder: (context) => TaskForm(task: task)));
             },
             icon: const Icon(Icons.edit),
           ),
           IconButton(
             onPressed: (){
-              ApiService.instance.deleteTask(task['id']).then((success){
+              ApiService.instance.deleteTask(task.id).then((success){
                 if(success){
                   //TODO: delete from list
                 }else{
@@ -116,11 +120,4 @@ class _TasksState extends State<Tasks> {
     )).toList();
   }
 
-  _loadTasks(){
-    ApiService.instance.getTasks().then((tasks){
-      setState(() {
-        _tasks = tasks;
-      });
-    });
-  }
 }

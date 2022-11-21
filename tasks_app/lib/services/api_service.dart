@@ -91,7 +91,13 @@ class ApiService{
 
       if (response.statusCode == 200 && response.data['success']) {
         log('log: $response');
-        return response.data['success'];
+
+        if(response.data['success']){
+          task.id = response.data['id'];
+          return true;
+        }
+
+        return false;
       }
     } catch (e) {
       log('log: $e');

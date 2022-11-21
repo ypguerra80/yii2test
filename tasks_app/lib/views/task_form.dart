@@ -1,6 +1,7 @@
 import 'dart:developer';
 
 import 'package:flutter/material.dart';
+import 'package:tasksapp/classes/task-model.dart';
 import 'package:tasksapp/classes/task_dto.dart';
 import 'package:tasksapp/services/api_service.dart';
 
@@ -139,8 +140,17 @@ class _TaskFormState extends State<TaskForm> {
           widget.task.title = titleController.value.text;
           widget.task.description = descriptionController.value.text;
 
+          bool isNew = widget.task.id == 0;
+
           ApiService.instance.saveTask(widget.task).then((success){
             if(success){
+
+              if(isNew){
+                TaskModel.instance.add(widget.task);
+              }else {
+                TaskModel.instance.update(widget.task);
+              }
+
               Navigator.pop(context);
             }
             else{

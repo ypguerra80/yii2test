@@ -93,6 +93,7 @@ class TaskController extends ActiveController
         if($task->save()){
             return [
                 'success' => true,
+                'id' => $task->id,
             ];
         }
 

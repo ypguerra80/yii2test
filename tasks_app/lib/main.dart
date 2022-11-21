@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
+import 'package:tasksapp/classes/task-model.dart';
 import 'package:tasksapp/classes/user_dto.dart';
-import 'package:tasksapp/services/api_service.dart';
 import 'package:tasksapp/services/storage_service.dart';
 import 'package:tasksapp/views/error_screen.dart';
 import 'package:tasksapp/views/login.dart';
@@ -8,7 +9,12 @@ import 'package:tasksapp/views/splash.dart';
 import 'package:tasksapp/views/tasks.dart';
 
 void main() {
-  runApp(const MyApp());
+  runApp(
+    ChangeNotifierProvider(
+      create: (context) => TaskModel.instance,
+      child: const MyApp(),
+    ),
+  );
 }
 
 class MyApp extends StatefulWidget {
